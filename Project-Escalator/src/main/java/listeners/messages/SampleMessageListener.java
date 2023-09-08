@@ -8,6 +8,7 @@ import com.slack.api.bolt.response.Response;
 import com.slack.api.methods.SlackApiException;
 import com.slack.api.model.event.MessageEvent;
 import java.io.IOException;
+import java.util.Base64;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import okhttp3.*;
@@ -29,7 +30,7 @@ public class SampleMessageListener implements BoltEventHandler<MessageEvent> {
             String messageText = payload.getEvent().getText();
 
             // Create a JIRA issue based on the message content
-            String jiraIssueSummary = "TEST Slack Automation";
+            String jiraIssueSummary = "Erin Test";
             String jiraIssueDescription = messageText;
 
             try {
@@ -52,26 +53,36 @@ public class SampleMessageListener implements BoltEventHandler<MessageEvent> {
     }
 
     private String parseMessageContents(String summary, String description) {
-        String environment;
+        String environment = "";
 
         Pattern envPattern = Pattern.compile("\\b(Zoom|Salesforce|App)\\b");
         Matcher envMatcher = envPattern.matcher(description);
 
+        String bugIssueId = "10008";
+        String slackLink = "";
+
         if (envMatcher.find()) { // Message contains Zoom, Salesforce, or App
             String matchedWord = envMatcher.group(1);
-            environment = matchedWord;
+            if (matchedWord.equals("Zoom")) environment = "10034";
+            else if (matchedWord.equals("App")) environment = "10099";
+            else if (matchedWord.equals("Salesforce")) environment = "10128";
         } else {
             environment = "";
         }
 
         String requestBody = "{"
                 + "\"fields\": {"
-                + "\"project\": {\"key\": \"OB_105\"},"
+                + "\"project\": {\"key\": \"OB\"},"
                 + "\"summary\": \"" + summary + "\","
                 + "\"description\": \"" + description + "\","
-                + "\"environment\": \"" + environment + "\","
+                + "\"customfield_10039\": {\"id\": \"" + environment + "\"},"
+                + "\"issuetype\": {\"id\": \"10008\"}"
+                // + "\"customfield_10064\": \"" + slackLink + "\","
                 + "}"
                 + "}";
+
+        System.out.println("Request Body:");
+        System.out.println(requestBody);
 
         return requestBody;
     }
@@ -79,16 +90,18 @@ public class SampleMessageListener implements BoltEventHandler<MessageEvent> {
     // Method to create a JIRA issue
     private String createJiraIssue(String requestBody) throws IOException {
         String jiraApiEndpoint = "https://everlightsolar.atlassian.net/rest/api/2/issue";
-        // TODO: NEED EVERLIGHT JIRA API TOKEN
-        String jiraApiToken = "random";
-
+        String jiraApiToken =
+                "ATATT3xFfGF0VU4_RLK5aRxuW2aZXJXVM5-tINAvQjhk9US5QpkTkge9QuI2PmjOWu3QJC8e3S-RmyU1xSBGkOOSQJUxOMrTgie__zRE1d6sCfjkuNV2zkLW70QkcHu_dayqr6_CbNKpGNOqklM3WcD2GrLSY8oDhcuItDergHiZgko0iPcuN-U=C502D086";
         OkHttpClient httpClient = new OkHttpClient();
 
         MediaType mediaType = MediaType.parse("application/json");
 
+        String credentials = "erin.crews@everlightsolar.com" + ":" + jiraApiToken;
+        String base64Credentials = Base64.getEncoder().encodeToString(credentials.getBytes());
+
         Request request = new Request.Builder()
                 .url(jiraApiEndpoint)
-                .addHeader("Authorization", "Bearer " + jiraApiToken)
+                .addHeader("Authorization", "Basic " + base64Credentials)
                 .addHeader("Content-Type", "application/json")
                 .post(RequestBody.create(requestBody, mediaType))
                 .build();
