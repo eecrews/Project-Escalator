@@ -4,13 +4,13 @@ listeners/views/ViewListeners.class
 utils/Constants$ActionIds.class
 utils/Constants$BlockIds.class
 listeners/ListenerProvider.class
-listeners/messages/SampleMessageListener.class
 listeners/views/SampleViewListener.class
 Main.class
 utils/Constants.class
 utils/MeetingArrangement.class
 listeners/messages/MessageListeners.class
 OAuthMain.class
+listeners/messages/IssueMessageListener.class
 listeners/Listeners.class
 listeners/actions/ActionListeners.class
 utils/Constants$CallbackIds.class

@@ -8,6 +8,6 @@ public class MessageListeners implements ListenerProvider {
     @Override
     public void register(App app) {
         Pattern envPattern = Pattern.compile("\\b.*(Zoom|Salesforce|App).*\\b");
-        app.message(envPattern, new SampleMessageListener(app));
+        app.message(envPattern, new IssueMessageListener(app));
     }
 }

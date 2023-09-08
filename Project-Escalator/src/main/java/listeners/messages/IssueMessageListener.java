@@ -14,11 +14,11 @@ import java.util.regex.Pattern;
 import okhttp3.*;
 import org.json.JSONObject;
 
-public class SampleMessageListener implements BoltEventHandler<MessageEvent> {
+public class IssueMessageListener implements BoltEventHandler<MessageEvent> {
 
     private final App app;
 
-    public SampleMessageListener(App app) {
+    public IssueMessageListener(App app) {
         this.app = app;
     }
 
@@ -73,10 +73,12 @@ public class SampleMessageListener implements BoltEventHandler<MessageEvent> {
                 + "\"summary\": \"" + summary + "\","
                 + "\"description\": \"" + description + "\","
                 + "\"customfield_10039\": {\"id\": \"" + environment + "\"},"
-                + "\"customfield_10099\": [ \"Tech_Team\"],"
+                + "\"customfield_10053\": [ \"Tech_Team\"],"
                 + "\"issuetype\": {\"id\": \"10008\"}" // Id corresponding to bug
                 + "}"
                 + "}";
+
+        System.out.println(requestBody);
 
         return requestBody;
     }
