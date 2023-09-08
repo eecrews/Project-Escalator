@@ -1,5 +1,3 @@
-listeners/shortcuts/ShortcutListeners.class
-listeners/commands/SampleCommandListener.class
 listeners/actions/SampleBlockActionListener.class
 listeners/events/EventListeners.class
 listeners/views/ViewListeners.class
@@ -12,10 +10,8 @@ Main.class
 utils/Constants.class
 utils/MeetingArrangement.class
 listeners/messages/MessageListeners.class
-listeners/shortcuts/SampleGlobalShortcutListener.class
 OAuthMain.class
 listeners/Listeners.class
-listeners/commands/CommandListeners.class
 listeners/actions/ActionListeners.class
 utils/Constants$CallbackIds.class
 listeners/events/AppHomeOpenedListener.class

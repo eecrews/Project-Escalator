@@ -8,6 +8,8 @@ import com.slack.api.bolt.response.Response;
 import com.slack.api.methods.SlackApiException;
 import com.slack.api.model.event.MessageEvent;
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import okhttp3.*;
 import org.json.JSONObject;
 
@@ -31,8 +33,11 @@ public class SampleMessageListener implements BoltEventHandler<MessageEvent> {
             String jiraIssueDescription = messageText;
 
             try {
+                // Analyze the information in the message
+                String requestBody = parseMessageContents(jiraIssueSummary, jiraIssueDescription);
+
                 // Create the JIRA issue and get its key
-                String issueKey = createJiraIssue(jiraIssueSummary, jiraIssueDescription);
+                String issueKey = createJiraIssue(requestBody);
 
                 // Send a confirmation message to the Slack channel
                 String confirmationMessage = "JIRA issue created with key: " + issueKey;
@@ -46,27 +51,46 @@ public class SampleMessageListener implements BoltEventHandler<MessageEvent> {
         return Response.ok();
     }
 
-    // Method to create a JIRA issue
-    private String createJiraIssue(String summary, String description) throws IOException {
-        String jiraApiEndpoint = "https://everlightsolar.atlassian.net/rest/api/2/issue";
-        // ** NEED EVERLIGHT JIRA API TOKEN String jiraApiToken =
+    private String parseMessageContents(String summary, String description) {
+        String environment;
 
-        OkHttpClient httpClient = new OkHttpClient();
+        Pattern envPattern = Pattern.compile("\\b(Zoom|Salesforce|App)\\b");
+        Matcher envMatcher = envPattern.matcher(description);
 
-        MediaType mediaType = MediaType.parse("application/json");
+        if (envMatcher.find()) { // Message contains Zoom, Salesforce, or App
+            String matchedWord = envMatcher.group(1);
+            environment = matchedWord;
+        } else {
+            environment = "";
+        }
+
         String requestBody = "{"
                 + "\"fields\": {"
                 + "\"project\": {\"key\": \"OB_105\"},"
                 + "\"summary\": \"" + summary + "\","
-                + "\"description\": \"" + description + "\""
+                + "\"description\": \"" + description + "\","
+                + "\"environment\": \"" + environment + "\","
                 + "}"
                 + "}";
+
+        return requestBody;
+    }
+
+    // Method to create a JIRA issue
+    private String createJiraIssue(String requestBody) throws IOException {
+        String jiraApiEndpoint = "https://everlightsolar.atlassian.net/rest/api/2/issue";
+        // TODO: NEED EVERLIGHT JIRA API TOKEN
+        String jiraApiToken = "random";
+
+        OkHttpClient httpClient = new OkHttpClient();
+
+        MediaType mediaType = MediaType.parse("application/json");
 
         Request request = new Request.Builder()
                 .url(jiraApiEndpoint)
                 .addHeader("Authorization", "Bearer " + jiraApiToken)
                 .addHeader("Content-Type", "application/json")
-                .post(RequestBody.create(mediaType, requestBody))
+                .post(RequestBody.create(requestBody, mediaType))
                 .build();
 
         try (okhttp3.Response response = httpClient.newCall(request).execute()) {
