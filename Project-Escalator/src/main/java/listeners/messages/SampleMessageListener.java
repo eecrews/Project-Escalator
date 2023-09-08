@@ -91,7 +91,7 @@ public class SampleMessageListener implements BoltEventHandler<MessageEvent> {
     private String createJiraIssue(String requestBody) throws IOException {
         String jiraApiEndpoint = "https://everlightsolar.atlassian.net/rest/api/2/issue";
         String jiraApiToken =
-                "ATATT3xFfGF0VU4_RLK5aRxuW2aZXJXVM5-tINAvQjhk9US5QpkTkge9QuI2PmjOWu3QJC8e3S-RmyU1xSBGkOOSQJUxOMrTgie__zRE1d6sCfjkuNV2zkLW70QkcHu_dayqr6_CbNKpGNOqklM3WcD2GrLSY8oDhcuItDergHiZgko0iPcuN-U=C502D086";
+                "ATATT3xFfGF0-8Xi1URPi8j_mwf9MPwikLku6BgAsfYO0t2aODt2CrovmeLGfa_e0arBxsWkPHOS--5gPGF5MSgES511Q1p_2MwAKMhxv2lJaX37bSK1mTT6k997eNCCnQoWLBb3kIH4gl7sm9tDKN0Poa4LzFbmn7Cg1dxE5p4kXgRj649E1R8=02840827";
         OkHttpClient httpClient = new OkHttpClient();
 
         MediaType mediaType = MediaType.parse("application/json");
